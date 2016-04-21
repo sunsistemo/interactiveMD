@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!-- adapted from: http://physics.weber.edu/schroeder/html5/ -->
+<!--
+    HTML5 index page with background animation, copyright 2014, Daniel V. Schroeder
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of
+    this software and associated data and documentation (the "Software"), to deal in
+    the Software without restriction, including without limitation the rights to
+    use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+    of the Software, and to permit persons to whom the Software is furnished to do
+    so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+    PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+    OTHER DEALINGS IN THE SOFTWARE.
+
+    Except as contained in this notice, the name of the author shall not be used in
+    advertising or otherwise to promote the sale, use or other dealings in this
+    Software without prior written authorization.
+-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1280">
+    <title>HTML5 tutorial</title>
+    <style>
+     canvas { display:block; }
+    </style>
+</head>
+
+<body>
+  <div style="width:1000px; margin-left:auto; margin-right:auto; position:relative;">
+
+    <canvas id="theCanvas" width="1000" height="750" style="position:fixed; z-index:-1;"></canvas>
+
+</div>
+
+<script>    // Background animation
+
+    // Global variables:
+    var theCanvas = document.getElementById("theCanvas");
+    var theContext = theCanvas.getContext("2d");
+    var N = 3;  // number of atoms
+    var x = [2, 4, 6]; y = [2, 2.1, 1.8];       // note that N=3 is hard-coded here
+    x[1] += 0.01*Math.random();     // randomize a bit so motion is always different
+    var vx = [0, 0, 0]; vy = [0, 0.7, 0];
+    var ax = new Array(N); ay = new Array(N);
+    var color = ["#ffd8c0", "#c0ffc0", "#e0d0ff"];
+    var pxPerUnit = 70;     // diameter of drawn atoms in (nominal) pixels
+    var boxWidth = theCanvas.width / pxPerUnit;     // box dimensions in natural units
+    var boxHeight = theCanvas.height / pxPerUnit;
+    var theButton = document.getElementById("theButton");
+    var running = true;
+
+    // Check for saved state from previous visit to this page:
+    var wasRunning = localStorage.getItem("running");
+    if (wasRunning != null) {
+        if (wasRunning == "false") {
+            running = false;
+            theButton.innerHTML = "Resume<br>animation";
+        }
+        var xList = localStorage.getItem("x").split(",");
+        var yList = localStorage.getItem("y").split(",");
+        var vxList = localStorage.getItem("vx").split(",");
+        var vyList = localStorage.getItem("vy").split(",");
+        for (var i=0; i<N; i++) {
+            x[i] = Number(xList[i]);    // These explicit conversions seem to be necessary
+            y[i] = Number(yList[i]);
+            vx[i] = Number(vxList[i]);
+            vy[i] = Number(vyList[i]);
+        }
+    }
+
+    window.addEventListener("beforeunload", saveState, false);
+
+    paintCanvas();
+    computeAccelerations();
+    simulate();     // start the simulation
+
+    // Function to simulate for a single animation frame and schedule next frame:
+    function simulate() {
+        for (var step=0; step<15; step++) {     // 15 time steps per frame
+            singleStep();
+        }
+        paintCanvas();
+        if (running) window.setTimeout(simulate, 1000/40);  // 40 frames per second
+    }
+
+    // Function to move forward in time by a single integration step:
+    function singleStep() {
+        var dt = 0.015;
+        for (var i=0; i<N; i++) {
+            x[i] += vx[i]*dt + 0.5*ax[i]*dt*dt;         // Verlet algorithm
+            y[i] += vy[i]*dt + 0.5*ay[i]*dt*dt;
+            vx[i] += 0.5*ax[i]*dt;
+            vy[i] += 0.5*ay[i]*dt;
+        }
+        computeAccelerations();
+        for (var i=0; i<N; i++) {
+            vx[i] += 0.5*ax[i]*dt;
+            vy[i] += 0.5*ay[i]*dt;
+        }
+    }
+
+    // Compute the accelerations of all the atoms:
+    function computeAccelerations() {
+        // First check for bounces off walls:
+        var wallStiffness = 50;
+        for (var i=0; i<N; i++) {
+            if (x[i] < 0.5) {
+                ax[i] = wallStiffness * (0.5 - x[i]);
+            } else
+                if (x[i] > (boxWidth - 0.5)) {
+                    ax[i] = wallStiffness * (boxWidth - 0.5 - x[i]);
+                } else
+                    ax[i] = 0.0;
+            if (y[i] < 0.5) {
+                ay[i] = (wallStiffness * (0.5 - y[i]));
+            } else
+                if (y[i] > (boxHeight - 0.5)) {
+                    ay[i] = (wallStiffness * (boxHeight - 0.5 - y[i]));
+                } else
+                    ay[i] = 0;
+        }
+        // Now compute inter-atomic forces (Lennard-Jones):
+        for (var i=0; i<N; i++) {
+            for (var j=0; j<i; j++) {
+                var dx = x[i] - x[j];
+                var dy = y[i] - y[j];
+                var rSquared = dx*dx + dy*dy;
+                var rSquaredInv = 1.0 / rSquared;
+                var attract = rSquaredInv * rSquaredInv * rSquaredInv;
+                var repel = attract * attract;
+                var fOverR = 24.0 * ((2.0 * repel) - attract) * rSquaredInv;
+                var fx = fOverR * dx;
+                var fy = fOverR * dy;
+                ax[i] += fx;  // add this force onto i's acceleration (m = 1)
+                ay[i] += fy;
+                ax[j] -= fx;  // Newton's 3rd law
+                ay[j] -= fy;
+            }
+        }
+    }
+
+    // Draw the atoms at their current locations:
+    function paintCanvas() {
+        theContext.clearRect(0, 0, theCanvas.width, theCanvas.height);
+        for (var i=0; i<N; i++) {
+            var centerX = x[i] * pxPerUnit;
+            var centerY = theCanvas.height - (y[i] * pxPerUnit);
+            theContext.beginPath();
+            theContext.arc(centerX, centerY, pxPerUnit/2, 0, 2*Math.PI);
+            theContext.fillStyle = color[i];
+            theContext.fill();
+        }
+    }
+
+    // Pause or resume the animation:
+    function startStop() {
+        running = !running;
+        if (running) {
+            simulate();
+            theButton.innerHTML = "Pause<br>animation";
+        } else {
+            theButton.innerHTML = "Resume<br>animation";
+        }
+    }
+
+    // Save the state before we exit:
+    function saveState() {
+        localStorage.setItem("time", (new Date()).getTime());
+        if (running) {
+            localStorage.setItem("running", "true");
+        } else {
+            localStorage.setItem("running", "false");
+        }
+        localStorage.setItem("x", x.toString());
+        localStorage.setItem("y", y.toString());
+        localStorage.setItem("vx", vx.toString());
+        localStorage.setItem("vy", vy.toString());
+    }
+
+</script>
+
+</body>
+
+</html>
