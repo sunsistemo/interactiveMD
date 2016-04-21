@@ -107,7 +107,7 @@
 		<div>
 		    <select id="presetSelect" onchange="loadPreset()" onblur="deselectPreset()">
 			<option value="presets" selected="">Presets</option>
-			<option>Two atoms</option><option>Bouncing ball</option><option>Chaotic bouncers</option><option>Brownian bar</option><option>Hot and cold</option><option>Target</option><option>Meteor</option><option>Explosion</option><option>Diatomic gas</option><option>All on left</option><option>Friction</option><option>Plucked string</option><option>Water balloon</option><option>Nano-pinball</option><option>Slingshot</option><option>Ratchet and pawl</option></select>
+			</select>
 		</div>
 		<div style="margin-top:5px;">
 		    Mouse/touch:
@@ -367,16 +367,17 @@
 	 // initialize differently for computers and mobile devices:
 	 if (mobile) sizeSlider.value = "25"; else sizeSlider.value = "50";
 	 if (mobile) nSlider.value = "100"; else nSlider.value = "500";
-	 changeSize();
-	 changeN();
 
+         changeSize();
+	 changeN();
+         loadFirstPreset();
 	 // fill the presets menu:
 	 for (var item=0; item<presetList.length; item++) {
 	     var thePreset = document.createElement("option");
 	     thePreset.text = presetList[item].name;
 	     presetSelect.add(thePreset, null);
 	 }
-
+         startStop()
 	 // register mouse/touch event listeners:
 	 canvas.addEventListener('mousedown', mouseDown, false);
 	 document.body.addEventListener('mousemove', mouseMove, false);
@@ -1692,10 +1693,8 @@
 	    }*/
      }
 
-    </script>
-    <script>
      function loadFirstPreset() {
-	 var index = 5;		// actual presets start at menu item 1
+	 var index = 0;		// actual presets start at menu item 1
 	 if (index < 0) return;
 	 fixTPanel.style.display = "none";
 	 N = presetList[index].N;	// the presetList array is in mdpresets.js, loaded above
@@ -1743,7 +1742,6 @@
 	 if (!running) startButton.innerHTML = "Start";
 	 presetSelect.selectedIndex = 0;		// reset menu to read "Presets" (doesn't work in iOS Safari)
      }
-     loadFirstPreset()
     </script>
 
 </body>
