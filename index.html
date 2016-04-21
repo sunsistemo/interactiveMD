@@ -36,13 +36,10 @@
             <ul>
                 <li>Introduction</li>
                 <li>Goal</li>
-                <li> Molecular Dynamics
-               <ul>
-                    <li>Physics</li>
-                    <li>Algorithms</li>
-                </ul></li>
+                <li>Physics</li>
+                <li>Verlet Integration</li>
+                <li>A Molecular Dynamics Program</li>
                 <li>Interactive MD</li>
-                <li>Recommendations...</li>
             </ul>
         </section>
         <section>
@@ -57,13 +54,13 @@
                 (or the atomic <i>fact</i>, or whatever you wish to call it) that <i>all things are made of
                 atoms—<i></i>little particles that move around in perpetual motion, attracting each
                 other when they are a little distance apart, but repelling upon being squeezed
-                into one another.</i>  In that one sentence, you will see, there is an <i>enormous</i> amount of
-                information about the world, if just a little imagination and thinking are applied.”
+                into one another.</i>”
                 </blockquote>
                 <p style="text-align:right; margin-top:3px;">
                 —Richard Feynman</p>
             </section>
         </section>
+
         <section>
             <section>
                 <h1>Goal</h1>
@@ -84,6 +81,39 @@
                 <h3>Increase understanding</h3>
 
             </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>Physics</h1>
+          </section>
+
+          <section data-background="Pictures/lj.svg" data-background-size="900px">
+            <h1>Lennard-Jones Potential</h1>
+            $$ u(r) = 4 \epsilon \left[ \left(\frac{\sigma}{r} \right)^{12} - \left(\frac{\sigma}{r}\right)^6\right]$$
+          </section>
+
+          <section data-background="Pictures/lj_white.png" data-background-size="900px" style="color: #313532;">
+            <div style="align: top";>
+              <p>$$ u(r) = 4 \epsilon \left[ \left(\frac{\sigma}{r} \right)^{12} - \left(\frac{\sigma}{r}\right)^6\right]$$</p>
+            </div>
+            <h1>.<br>.<br>.</h1>
+          </section>
+
+          <section data-background="Pictures/lj.svg" data-background-size="900px">
+            <h1>Newton</h1>
+            <ul>
+              <li class="fragment">$$ F = -\frac{du}{dr} $$</li>
+              <li class="fragment fade-in">$$ F = m a$$</li>
+            </ul>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h1>Verlet Integration</h1>
+          </section>
+
         </section>
 
         <section>
