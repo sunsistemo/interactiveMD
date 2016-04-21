@@ -24,7 +24,7 @@
   <body>
     <div class="reveal">
       <div class="slides">
-        <section>
+        <section data-background-iframe="title_background.html">
           <h1>Interactive Molecular Dynamics</h1>
           <h3>Daniel V. Schroeder</h3>
 
@@ -69,7 +69,62 @@
                 <h3>Increase understanding</h3>
 
             </section>
-        </sections>
+        </section>
+
+        <section>
+          <section>
+            <h1>Building a Molecular Dynamics program</h1>
+          </section>
+
+          <section>
+            <h1>A Simple Molecular Dynamics Program</h1>
+            <pre><code data-trim data-noescape>
+def main():
+    init()
+    t = 0
+    while (t < tmax):        # MD loop
+        force(f, en)         # determine forces
+        integrate(f, en)     # integrate equations of motion
+        t = t + delt
+        sample()             # sample averages
+            </code></pre>
+          </section>
+
+          <section>
+            <h1>Initialization</h1>
+            <pre><code data-trim data-noescape>
+def init():
+    for i in range(npart):
+        x[i] = lattice_pos(i)    # place particles on a lattice
+        v[i] = (random() - 0.5)  # give random velocities
+    return
+            </code></pre>
+          </section>
+
+          <section>
+            <h1>Force Calculation</h1>
+            <pre><code data-trim data-noescape>
+def force(f, en):
+    en = 0
+    for i in range(npart):
+        f[i] = 0                # set forces to zero
+    for i in range(npart - 1):
+        for j in range(i + 1, npart):  # loop over all pairs
+            xr = x[i] - x[j]
+            xr = xr - box * round(xr / box)  # periodic boundary conditions
+            r2 = xr ** 2
+            if (r2 < rc2):      # test cutoff
+                r2i = 1 / r2
+                r6i = r2i ** 3
+                ff = 48 * r2i * r6i * (r6i - 0.5)  # Lennard-Jones potential
+                f[i] = f[i] + ff * xr              # update forces
+                f[j] = f[j] - ff * xr              #
+                en = en + 4 * r6i * (r6i - 1) - ecut  # update energy
+    return
+            </code></pre>
+          </section>
+
+        </section>
 
       </div>
     </div>
