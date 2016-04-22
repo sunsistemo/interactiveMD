@@ -59,18 +59,6 @@
                 <p style="text-align:right; margin-top:3px;">
                 —Richard Feynman</p>
             </section>
-            <section>
-                <h2>Molecular Dynamics</h2>
-                <ol>
-                    <li class="fragment">Position your atoms</li>
-                    <li class="fragment">Evolve according to Newton</li>
-                    <li class="fragment">Wait until it reaches equilibrium</li>
-                    <li class="fragment">Start measuring $\left(E_\text{kin}, E_\text{pot}\right)$</li>
-                    <li class="fragment">Compute quantities $\left(P, T, \dots\right)$</li>
-                    <li class="fragment">Take the time average</li>
-
-                </ol>
-            </section>
         </section>
 
         <section>
@@ -104,36 +92,51 @@
 
             </section>
         </section>
+        <section>
+            <h2>Molecular Dynamics</h2>
+            <ol>
+                <li class="fragment">Position your atoms</li>
+                <li class="fragment">Evolve according to Newton</li>
+                <li class="fragment">Wait until it reaches equilibrium</li>
+                <li class="fragment">Start measuring $\left(E_\text{kin}, E_\text{pot}\right)$</li>
+                <li class="fragment">Compute quantities $\left(P, T, \dots\right)$</li>
+                <li class="fragment">Take the time average</li>
+
+            </ol>
+        </section>
 
         <section>
           <section>
-            <h1>Physics</h1>
+            <h1>Ingredients</h1>
           </section>
 
           <section data-background="Pictures/lj.svg" data-background-size="900px">
-            <h1>Lennard-Jones Potential</h1>
+            <h2>Lennard-Jones Potential</h2>
             $$ u(r) = 4 \epsilon \left[ \left(\frac{\sigma}{r} \right)^{12} - \left(\frac{\sigma}{r}\right)^6\right]$$
           </section>
 
-          <section data-background="Pictures/lj_white.png" data-background-size="900px" style="color: #313532;">
-            <div style="align: top";>
-              <p>$$ u(r) = 4 \epsilon \left[ \left(\frac{\sigma}{r} \right)^{12} - \left(\frac{\sigma}{r}\right)^6\right]$$</p>
+          <section data-background="Pictures/lj_white.png" data-background-size="900px" style="color: #313532;" data-transition="fade-in">
+            <div align="right" vertical-align="top">
+                <p align="right"> $ u(r) = 4 \epsilon \left[ \left(\frac{\sigma}{r} \right)^{12} - \left(\frac{\sigma}{r}\right)^6\right]$</p>
             </div>
-            <h1>.<br>.<br>.</h1>
+            <h1><br><br><br><br></h1>
           </section>
 
           <section data-background="Pictures/lj.svg" data-background-size="900px">
-            <h1>Newton</h1>
+            <h2>Newton</h2>
             <ul>
               <li class="fragment">$$ F = -\frac{du}{dr} $$</li>
               <li class="fragment">$$ F = m a$$</li>
             </ul>
           </section>
-        </section>
 
-        <section>
           <section>
-            <h1>Verlet Integration</h1>
+              <h2>Verlet Integration</h2>
+              \begin{align}
+              r \left(t+\Delta t \right)&=r(t) + v(t) \Delta t + \frac{f(t)}{2m}\Delta t^2\\
+              \quad\\
+              v \left(t+\Delta t \right)&=v(t) + \frac{f(t+\Delta t) + f(t)}{2m}\Delta t
+              \end{align}
           </section>
 
         </section>
@@ -144,7 +147,7 @@
           </section>
 
           <section>
-            <h1>A Simple Molecular Dynamics Program</h1>
+            <h2>A Simple Molecular Dynamics Program</h2>
             <pre><code data-trim data-noescape>
 def main():
     init()
@@ -158,7 +161,7 @@ def main():
           </section>
 
           <section>
-            <h1>Initialization</h1>
+            <h2>Initialization</h2>
             <pre><code data-trim data-noescape>
 def init():
     for i in range(npart):
@@ -169,7 +172,7 @@ def init():
           </section>
 
           <section>
-            <h1>Force Calculation</h1>
+            <h2>Force Calculation</h2>
             <pre><code data-trim data-noescape>
 def force(f, en):
     for i in range(npart - 1):
